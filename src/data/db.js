@@ -1,6 +1,9 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 
-const db = new Database("tasks.db");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const db = new Database(path.join(__dirname, "../../tasks.db"));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS tasks (

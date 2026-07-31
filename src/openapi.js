@@ -1,11 +1,4 @@
-import express from "express";
-import swaggerUi from "swagger-ui-express";
-import { getTasks, searchTasks, createTask, updateTask, deleteTask, getStats, resetTasks } from "./controllers.js";
-
-let app = express();
-app.use(express.json());
-
-let apiDoc = {
+const apiDoc = {
     openapi: "3.0.0",
     info: { title: "To-Do API", version: "1.0.0" },
     paths: {
@@ -101,22 +94,4 @@ let apiDoc = {
     },
 };
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDoc));
-
-app.get("/tasks", getTasks);
-app.get("/tasks/search", searchTasks);
-app.post("/tasks", createTask);
-app.put("/tasks/:id", updateTask);
-app.delete("/tasks/:id", deleteTask);
-app.get("/stats", getStats);
-app.post("/reset", resetTasks);
-
-app.use((req, res) => {
-    res.status(404).json({ error: "not found" });
-});
-
-app.use((err, req, res, next) => {
-    res.status(err.status || 500).json({ error: err.message || "internal server error" });
-});
-
-app.listen(3000, () => console.log("listening on http://localhost:3000"));
+export default apiDoc;
