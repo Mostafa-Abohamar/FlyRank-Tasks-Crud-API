@@ -1,6 +1,6 @@
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import { getTasks, createTask, updateTask, deleteTask, getStats, resetTasks } from "./controllers.js";
+import { getTasks, searchTasks, createTask, updateTask, deleteTask, getStats, resetTasks } from "./controllers.js";
 
 let app = express();
 app.use(express.json());
@@ -14,7 +14,6 @@ let apiDoc = {
                 summary: "List all tasks",
                 parameters: [
                     { name: "done", in: "query", schema: { type: "boolean" }, description: "Filter by completion status" },
-                    { name: "search", in: "query", schema: { type: "string" }, description: "Search in title" },
                 ],
                 responses: { 200: { description: "Array of tasks" } },
             },
@@ -36,6 +35,16 @@ let apiDoc = {
                     },
                 },
                 responses: { 201: { description: "Created task" } },
+            },
+        },
+        "/tasks/search": {
+            get: {
+                summary: "Search tasks by title",
+                parameters: [
+                    { name: "q", in: "query", required: true, schema: { type: "string" }, description: "Search term in title" },
+                    { name: "done", in: "query", schema: { type: "boolean" }, description: "Filter by completion status" },
+                ],
+                responses: { 200: { description: "Array of matching tasks" } },
             },
         },
         "/tasks/{id}": {
@@ -95,10 +104,19 @@ let apiDoc = {
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDoc));
 
 app.get("/tasks", getTasks);
+app.get("/tasks/search", searchTasks);
 app.post("/tasks", createTask);
 app.put("/tasks/:id", updateTask);
 app.delete("/tasks/:id", deleteTask);
 app.get("/stats", getStats);
 app.post("/reset", resetTasks);
+
+app.use((req, res) => {
+    res.status(404).json({ error: "not found" });
+});
+
+app.use((err, req, res, next) => {
+    res.status(err.status || 500).json({ error: err.message || "internal server error" });
+});
 
 app.listen(3000, () => console.log("listening on http://localhost:3000"));
