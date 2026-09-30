@@ -1,5 +1,8 @@
+import "dotenv/config";
 import express from "express";
 import routes from "./routes.js";
+
+const port = Number(process.env.PORT) || 3000;
 
 let app = express();
 app.use(express.json());
@@ -13,4 +16,4 @@ app.use((err, req, res, next) => {
     res.status(err.status || 500).json({ error: err.message || "internal server error" });
 });
 
-app.listen(3000, () => console.log("listening on http://localhost:3000"));
+app.listen(port, () => console.log(`listening on http://localhost:${port}`));
